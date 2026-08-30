@@ -85,7 +85,8 @@ document.addEventListener("click",e=>{if(e.target.id==="add")add();if(e.target.m
         addr=data.jibunAddress;
       }
       const finalAddr=(data.zonecode ? "["+data.zonecode+"] " : "")+addr;
-      c.querySelector(".baseaddr").value=finalAddr;
+      c.querySelector(".postalcode").value=data.zonecode || "";
+      c.querySelector(".baseaddr").value=addr;
       c.querySelector(".addrbox").textContent=finalAddr;
       c.querySelector(".addrbox").classList.remove("invalid");
       const ae=c.querySelector(".addrerr");
