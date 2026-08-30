@@ -157,5 +157,5 @@ document.addEventListener("click",e=>{if(e.target.id==="add")add();if(e.target.m
       if(detail) detail.focus();
     }
   }).open();
-}if(e.target.id==="back")modal.classList.add("hidden");if(e.target.matches(".edit")){let i=+e.target.dataset.i;modal.classList.add("hidden");document.querySelectorAll(".recipient")[i].scrollIntoView({behavior:"smooth"})}if(e.target.id==="submitMock")alert("현재는 화면 테스트 버전입니다. 실제 주문 저장은 다음 서버/DB 단계에서 연결합니다.")});
+}if(e.target.id==="back")modal.classList.add("hidden");if(e.target.matches(".edit")){let i=+e.target.dataset.i;modal.classList.add("hidden");document.querySelectorAll(".recipient")[i].scrollIntoView({behavior:"smooth"})}if(e.target.id==="submitMock")submitOrder()
 form.addEventListener("submit",e=>{e.preventDefault();if(validate())reviewOrder()});add();
