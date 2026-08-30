@@ -8,28 +8,49 @@ function renum(){let a=[...document.querySelectorAll(".recipient")];a.forEach((c
 function calc(){let q=0,t=0;document.querySelectorAll(".product").forEach(e=>{let n=+e.querySelector("output").value,p=C.products.find(x=>x.id===e.dataset.p);q+=n;t+=n*p.price});let d=document.querySelectorAll(".recipient").length;dest.textContent=d+"곳";qty.textContent=q+"박스";total.textContent=won(t+d*C.shippingFee)}
 function err(input,msg){let l=input.closest("label");l.classList.add("invalid");l.querySelector("small").textContent=msg;return l}
 function validate(){
- document.querySelectorAll(".addrerr").forEach(x=>x.remove());document.querySelectorAll(".invalid").forEach(x=>x.classList.remove("invalid"));
+ document.querySelectorAll(".addrerr").forEach(x=>x.remove());
+ document.querySelectorAll(".invalid").forEach(x=>x.classList.remove("invalid"));
  document.querySelectorAll("small").forEach(x=>x.textContent="");
  let first=null;
- if(!senderName.value.trim()){let x=err(senderName,"주문자 이름을 입력해주세요.");if(!first)first=x;}
- if(!validPhone(senderPhone.value)){let x=err(senderPhone,"올바른 휴대전화번호를 입력해주세요.");if(!first)first=x;}
+
+ function mark(input,msg){
+   const x=err(input,msg);
+   if(!first) first=x;
+ }
+ if(!senderName.value.trim()) mark(senderName,"주문자 이름을 입력해주세요.");
+ if(!validPhone(senderPhone.value)) mark(senderPhone,"올바른 휴대전화번호를 입력해주세요.");
+
  document.querySelectorAll(".recipient").forEach(c=>{
-   let n=c.querySelector(".rname"),p=c.querySelector(".rphone"),addr=c.querySelector(".addr"),products=c.querySelector(".products"),carderr=c.querySelector(".carderr");
-   if(!n.value.trim()){let x=err(n,"받는 사람 이름을 입력해주세요.");if(!first)first=x;}
-   if(!validPhone(p.value)){let x=err(p,"올바른 휴대전화번호를 입력해주세요.");if(!first)first=x;}
+   const n=c.querySelector(".rname");
+   const p=c.querySelector(".rphone");
+   const addr=c.querySelector(".addr");
+   const products=c.querySelector(".products");
+   const carderr=c.querySelector(".carderr");
+
+   if(!n.value.trim()) mark(n,"받는 사람 이름을 입력해주세요.");
+   if(!validPhone(p.value)) mark(p,"올바른 휴대전화번호를 입력해주세요.");
+
    if(!c.querySelector(".baseaddr").value){
      addr.classList.add("invalid");
-     let m=document.createElement("small"); m.className="addrerr"; m.textContent="주소를 검색하여 선택해주세요."; addr.appendChild(m);
-     if(!first)first=addr;
+     const m=document.createElement("small");
+     m.className="addrerr";
+     m.textContent="주소를 검색하여 선택해주세요.";
+     addr.appendChild(m);
+     if(!first) first=addr;
    }
+
    if([...c.querySelectorAll("output")].reduce((s,o)=>s+(+o.value),0)<1){
      products.classList.add("invalid");
      carderr.textContent="상품을 최소 1개 이상 선택해주세요.";
-     if(!first)first=products;
+     if(!first) first=products;
    }
  });
- if(first){first.scrollIntoView({behavior:"smooth",block:"center"});return false}
- return true
+
+ if(first){
+   first.scrollIntoView({behavior:"smooth",block:"center"});
+   return false;
+ }
+ return true;
 }
 function reviewOrder(){let h=`<p><b>주문자:</b> ${senderName.value} / ${senderPhone.value}</p>`;document.querySelectorAll(".recipient").forEach((c,i)=>{let items=[...c.querySelectorAll(".product")].map(e=>({q:+e.querySelector("output").value,p:C.products.find(x=>x.id===e.dataset.p)})).filter(x=>x.q);h+=`<div class="review-card"><button type="button" class="btn light edit" data-i="${i}">수정</button><b>배송지 ${i+1}</b><p>${c.querySelector(".rname").value} / ${c.querySelector(".rphone").value}<br>${c.querySelector(".baseaddr").value}${c.querySelector(".detailinput").value?" "+c.querySelector(".detailinput").value:""}</p>${items.map(x=>`${x.p.name} × ${x.q}`).join("<br>")}</div>`});h+=`<p><b>${qty.textContent} / ${total.textContent}</b></p>`;review.innerHTML=h;modal.classList.remove("hidden")}
 document.addEventListener("input",e=>{if(e.target.matches("#senderPhone,.rphone"))e.target.value=phone(e.target.value)});
