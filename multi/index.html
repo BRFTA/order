@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>BRFTA 다중배송 주문</title>
+  <link rel="stylesheet" href="style.css?v=1.9.1">
+</head>
+<body>
+  <header>
+    <div class="wrap brand">
+      <b>BRFTA</b>
+      <span>배려프레스코푸르타</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <h1>다중배송 주문</h1>
+    <p class="muted">주문자 정보를 한 번 입력한 뒤 여러 배송지를 추가할 수 있습니다.</p>
+
+    <form id="form" novalidate>
+      <section class="card">
+        <h2>주문자 정보</h2>
+        <div class="grid">
+          <label>이름 *
+            <input id="senderName" placeholder="주문자 이름" autocomplete="name">
+            <small></small>
+          </label>
+          <label>휴대전화번호 *
+            <input id="senderPhone" inputmode="numeric" maxlength="13" placeholder="010-0000-0000" autocomplete="tel">
+            <small></small>
+          </label>
+        </div>
+      </section>
+
+      <div id="recipients"></div>
+
+      <button type="button" id="add" class="btn light wide">+ 배송지 추가</button>
+
+      <section class="card">
+        <h2>주문 요약</h2>
+        <div class="summary">
+          <span>배송지</span><strong id="dest">1곳</strong>
+          <span>총 상품수량</span><strong id="qty">0박스</strong>
+          <span>상품금액</span><strong id="goodsTotal">0원</strong>
+          <span>배송비</span><strong id="shippingTotal">0원</strong>
+          <span>최종 주문금액</span><strong id="total">0원</strong>
+        </div>
+        <p class="muted">배송비는 박스당 4,500원입니다. 배와 배즙은 합배송하지 않습니다.</p>
+      </section>
+
+      <button type="submit" class="btn primary wide submit">주문 내용 확인</button>
+    </form>
+  </main>
+
+  <div id="modal" class="modal hidden">
+    <div class="dialog">
+      <h2>주문 내용 확인</h2>
+      <div id="review"></div>
+      <div class="actions">
+        <button type="button" id="back" class="btn light">입력 화면으로 돌아가기</button>
+        <button type="button" id="submitOrderBtn" class="btn primary">주문 접수하기</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="delModal" class="modal hidden">
+    <div class="dialog small">
+      <h2>배송지를 삭제할까요?</h2>
+      <p>입력한 배송지 정보와 상품수량이 삭제됩니다.</p>
+      <div class="actions">
+        <button type="button" id="cancelDel" class="btn light">취소</button>
+        <button type="button" id="okDel" class="btn danger">삭제</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+  <script src="config.js?v=1.9.1"></script>
+  <script src="app.js?v=1.9.1"></script>
+</body>
+</html>

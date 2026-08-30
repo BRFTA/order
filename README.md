@@ -1,23 +1,14 @@
-# BRFTA 다중배송 주문 v1.9.1
+# BRFTA Order Hub v1.0
 
-실제 Cloudflare Worker + D1 주문 접수 연결 버전입니다.
+구조:
+- `/index.html` : 주문 메인페이지
+- `/multi/` : 기존 고객 주문페이지 v1.9.1 (원본 그대로 복사)
+- `/downloads/로젠택배_다배송_FORM.xlsx` : 고객용 로젠택배 다배송 Excel 양식
 
-업로드할 파일:
-- index.html
-- style.css
-- config.js
-- app.js
+연결:
+1. 다중배송 입력 시스템 -> `./multi/`
+2. 네이버 스마트스토어 -> `https://smartstore.naver.com/brfta`
+3. 로젠택배 Excel -> `./downloads/로젠택배_다배송_FORM.xlsx`
+4. 주문관리 시스템 -> `https://brfta-order-admin.brfrescofruta.workers.dev/`
 
-GitHub 저장소 루트의 동일 파일을 이 버전으로 교체하세요.
-
-API:
-https://brfta-order-api.brfrescofruta.workers.dev/orders
-
-주요 변경:
-- 받는 사람 입력란 정상 생성
-- 우편번호 / 기본주소 분리 저장
-- 실제 주문 접수 API 연결
-- 주문 금액 / 배송비 전송
-- 중복 주문 접수 방지
-- 테스트 버전 안내문 제거
-- 캐시 버전 v1.9.1.0 적용
+주의: 관리자 v1.3 Worker 코드는 이 패키지에서 수정하지 않습니다.
