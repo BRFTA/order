@@ -339,9 +339,8 @@
 
       alert(msg);
 
-      // 성공 후 중복 접수를 막는다.
-      submitOrderBtn.disabled = true;
-      submitOrderBtn.textContent = "접수 완료";
+      // 서버 저장이 성공한 경우에만 주문 입력 화면을 처음 상태로 초기화한다.
+      resetOrderForm(oldText);
 
     } catch (error) {
       alert(
@@ -353,6 +352,28 @@
       submitOrderBtn.disabled = false;
       submitOrderBtn.textContent = oldText;
     }
+  }
+
+  function resetOrderForm(submitButtonText) {
+    senderName.value = "";
+    senderPhone.value = "";
+
+    pending = null;
+    seq = 1;
+
+    R.innerHTML = "";
+    review.innerHTML = "";
+    delModal.classList.add("hidden");
+    modal.classList.add("hidden");
+
+    clearValidation();
+    add();
+
+    submitting = false;
+    submitOrderBtn.disabled = false;
+    submitOrderBtn.textContent = submitButtonText || "주문 접수하기";
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   document.addEventListener("input", e => {

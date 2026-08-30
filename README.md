@@ -1,4 +1,4 @@
-# BRFTA 다중배송 주문 v1.9
+# BRFTA 다중배송 주문 v1.9.1
 
 실제 Cloudflare Worker + D1 주문 접수 연결 버전입니다.
 
@@ -20,4 +20,4 @@ https://brfta-order-api.brfrescofruta.workers.dev/orders
 - 주문 금액 / 배송비 전송
 - 중복 주문 접수 방지
 - 테스트 버전 안내문 제거
-- 캐시 버전 v1.9.0 적용
+- 캐시 버전 v1.9.1.0 적용
