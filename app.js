@@ -63,6 +63,68 @@ function validate(){
  }
  return true;
 }
+async function submitOrder(){
+  const x=totals();
+
+  const recipients=[...document.querySelectorAll(".recipient")].map(c=>({
+    recipient_name:c.querySelector(".rname").value.trim(),
+    recipient_phone:c.querySelector(".rphone").value,
+    postal_code:c.querySelector(".postalcode").value,
+    base_address:c.querySelector(".baseaddr").value,
+    detail_address:c.querySelector(".detailinput").value.trim(),
+    items:[...c.querySelectorAll(".product")].map(e=>{
+      const p=C.products.find(x=>x.id===e.dataset.p);
+      return {
+        product_code:p.id,
+        product_name:p.name,
+        unit_price:Number(p.price||0),
+        quantity:Number(e.querySelector("output").value||0)
+      };
+    }).filter(item=>item.quantity>0)
+  }));
+
+  const data={
+    orderer_name:senderName.value.trim(),
+    orderer_phone:senderPhone.value,
+    payment_method:"bank_transfer",
+    product_amount:x.goods,
+    shipping_fee:x.shipping,
+    total_amount:x.grand,
+    recipients
+  };
+
+  try{
+    const response=await fetch(
+      "https://brfta-order-api.brfrescofruta.workers.dev/orders",
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify(data)
+      }
+    );
+
+    const result=await response.json();
+
+    if(!response.ok || !result.success){
+      throw new Error(result.message || "주문 접수에 실패했습니다.");
+    }
+
+    alert(
+      "주문이 정상적으로 접수되었습니다.\n\n"+
+      "주문번호: "+result.order_number
+    );
+
+    modal.classList.add("hidden");
+
+  }catch(error){
+    alert(
+      "주문 접수 중 오류가 발생했습니다.\n\n"+
+      error.message
+    );
+  }
+}
 function reviewOrder(){let h=`<p><b>주문자:</b> ${senderName.value} / ${senderPhone.value}</p>`;document.querySelectorAll(".recipient").forEach((c,i)=>{let items=[...c.querySelectorAll(".product")].map(e=>({q:+e.querySelector("output").value,p:C.products.find(x=>x.id===e.dataset.p)})).filter(x=>x.q);h+=`<div class="review-card"><button type="button" class="btn light edit" data-i="${i}">수정</button><b>배송지 ${i+1}</b><p>${c.querySelector(".rname").value} / ${c.querySelector(".rphone").value}<br>${c.querySelector(".baseaddr").value}${c.querySelector(".detailinput").value?" "+c.querySelector(".detailinput").value:""}</p>${items.map(x=>`${x.p.name} × ${x.q} = ${won(x.p.price*x.q)}`).join("<br>")}</div>`});let x=totals();h+=`<div class="review-totals"><p>총 상품수량 <b>${x.q}박스</b></p><p>상품금액 <b>${won(x.goods)}</b></p><p>배송비 <b>${won(x.shipping)}</b> <span class="muted">(${won(C.shippingFeePerBox)} × ${x.q}박스)</span></p><p><b>최종 주문금액 ${won(x.grand)}</b></p></div>`;review.innerHTML=h;modal.classList.remove("hidden")}
 document.addEventListener("input",e=>{if(e.target.matches("#senderPhone,.rphone"))e.target.value=phone(e.target.value)});
 document.addEventListener("click",e=>{if(e.target.id==="add")add();if(e.target.matches(".plus,.minus")){let o=e.target.parentElement.querySelector("output"),n=+o.value+(e.target.matches(".plus")?1:-1);o.value=Math.max(0,Math.min(9,n));calc()}if(e.target.matches(".del")){pending=e.target.closest(".recipient");delModal.classList.remove("hidden")}if(e.target.id==="cancelDel")delModal.classList.add("hidden");if(e.target.id==="okDel"&&pending){pending.remove();pending=null;delModal.classList.add("hidden");renum()}if(e.target.matches(".addrbtn")){
