@@ -64,5 +64,34 @@ function validate(){
 }
 function reviewOrder(){let h=`<p><b>주문자:</b> ${senderName.value} / ${senderPhone.value}</p>`;document.querySelectorAll(".recipient").forEach((c,i)=>{let items=[...c.querySelectorAll(".product")].map(e=>({q:+e.querySelector("output").value,p:C.products.find(x=>x.id===e.dataset.p)})).filter(x=>x.q);h+=`<div class="review-card"><button type="button" class="btn light edit" data-i="${i}">수정</button><b>배송지 ${i+1}</b><p>${c.querySelector(".rname").value} / ${c.querySelector(".rphone").value}<br>${c.querySelector(".baseaddr").value}${c.querySelector(".detailinput").value?" "+c.querySelector(".detailinput").value:""}</p>${items.map(x=>`${x.p.name} × ${x.q}`).join("<br>")}</div>`});h+=`<p><b>${qty.textContent} / ${total.textContent}</b></p>`;review.innerHTML=h;modal.classList.remove("hidden")}
 document.addEventListener("input",e=>{if(e.target.matches("#senderPhone,.rphone"))e.target.value=phone(e.target.value)});
-document.addEventListener("click",e=>{if(e.target.id==="add")add();if(e.target.matches(".plus,.minus")){let o=e.target.parentElement.querySelector("output"),n=+o.value+(e.target.matches(".plus")?1:-1);o.value=Math.max(0,Math.min(9,n));calc()}if(e.target.matches(".del")){pending=e.target.closest(".recipient");delModal.classList.remove("hidden")}if(e.target.id==="cancelDel")delModal.classList.add("hidden");if(e.target.id==="okDel"&&pending){pending.remove();pending=null;delModal.classList.add("hidden");renum()}if(e.target.matches(".addrbtn")){let c=e.target.closest(".recipient"),a=prompt("1차 테스트용 기본주소 입력\n(다음 단계에서 실제 주소검색 서비스를 연결합니다.)","");if(a){c.querySelector(".baseaddr").value=a;c.querySelector(".addrbox").textContent=a}}if(e.target.id==="back")modal.classList.add("hidden");if(e.target.matches(".edit")){let i=+e.target.dataset.i;modal.classList.add("hidden");document.querySelectorAll(".recipient")[i].scrollIntoView({behavior:"smooth"})}if(e.target.id==="submitMock")alert("현재는 화면 테스트 버전입니다. 실제 주문 저장은 다음 서버/DB 단계에서 연결합니다.")});
+document.addEventListener("click",e=>{if(e.target.id==="add")add();if(e.target.matches(".plus,.minus")){let o=e.target.parentElement.querySelector("output"),n=+o.value+(e.target.matches(".plus")?1:-1);o.value=Math.max(0,Math.min(9,n));calc()}if(e.target.matches(".del")){pending=e.target.closest(".recipient");delModal.classList.remove("hidden")}if(e.target.id==="cancelDel")delModal.classList.add("hidden");if(e.target.id==="okDel"&&pending){pending.remove();pending=null;delModal.classList.add("hidden");renum()}if(e.target.matches(".addrbtn")){
+  const c=e.target.closest(".recipient");
+  if(typeof daum==="undefined" || !daum.Postcode){
+    alert("주소 검색 서비스를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.");
+    return;
+  }
+  new daum.Postcode({
+    oncomplete:function(data){
+      let addr="";
+      let extraAddr="";
+      if(data.userSelectedType==="R"){
+        addr=data.roadAddress;
+        if(data.bname!=="" && /[동|로|가]$/g.test(data.bname)) extraAddr+=data.bname;
+        if(data.buildingName!=="" && data.apartment==="Y")
+          extraAddr+=(extraAddr!=="" ? ", "+data.buildingName : data.buildingName);
+        if(extraAddr!=="") addr+=" ("+extraAddr+")";
+      }else{
+        addr=data.jibunAddress;
+      }
+      const finalAddr=(data.zonecode ? "["+data.zonecode+"] " : "")+addr;
+      c.querySelector(".baseaddr").value=finalAddr;
+      c.querySelector(".addrbox").textContent=finalAddr;
+      c.querySelector(".addrbox").classList.remove("invalid");
+      const ae=c.querySelector(".addrerr");
+      if(ae) ae.remove();
+      const detail=c.querySelector(".detailinput");
+      if(detail) detail.focus();
+    }
+  }).open();
+}if(e.target.id==="back")modal.classList.add("hidden");if(e.target.matches(".edit")){let i=+e.target.dataset.i;modal.classList.add("hidden");document.querySelectorAll(".recipient")[i].scrollIntoView({behavior:"smooth"})}if(e.target.id==="submitMock")alert("현재는 화면 테스트 버전입니다. 실제 주문 저장은 다음 서버/DB 단계에서 연결합니다.")});
 form.addEventListener("submit",e=>{e.preventDefault();if(validate())reviewOrder()});add();
