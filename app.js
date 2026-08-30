@@ -11,21 +11,21 @@ function validate(){
  document.querySelectorAll(".addrerr").forEach(x=>x.remove());document.querySelectorAll(".invalid").forEach(x=>x.classList.remove("invalid"));
  document.querySelectorAll("small").forEach(x=>x.textContent="");
  let first=null;
- if(!senderName.value.trim()) first=first||err(senderName,"주문자 이름을 입력해주세요.");
- if(!validPhone(senderPhone.value)) first=first||err(senderPhone,"올바른 휴대전화번호를 입력해주세요.");
+ if(!senderName.value.trim()){let x=err(senderName,"주문자 이름을 입력해주세요.");if(!first)first=x;}
+ if(!validPhone(senderPhone.value)){let x=err(senderPhone,"올바른 휴대전화번호를 입력해주세요.");if(!first)first=x;}
  document.querySelectorAll(".recipient").forEach(c=>{
    let n=c.querySelector(".rname"),p=c.querySelector(".rphone"),addr=c.querySelector(".addr"),products=c.querySelector(".products"),carderr=c.querySelector(".carderr");
-   if(!n.value.trim()) first=first||err(n,"받는 사람 이름을 입력해주세요.");
-   if(!validPhone(p.value)) first=first||err(p,"올바른 휴대전화번호를 입력해주세요.");
+   if(!n.value.trim()){let x=err(n,"받는 사람 이름을 입력해주세요.");if(!first)first=x;}
+   if(!validPhone(p.value)){let x=err(p,"올바른 휴대전화번호를 입력해주세요.");if(!first)first=x;}
    if(!c.querySelector(".baseaddr").value){
      addr.classList.add("invalid");
      let m=document.createElement("small"); m.className="addrerr"; m.textContent="주소를 검색하여 선택해주세요."; addr.appendChild(m);
-     first=first||addr;
+     if(!first)first=addr;
    }
    if([...c.querySelectorAll("output")].reduce((s,o)=>s+(+o.value),0)<1){
      products.classList.add("invalid");
      carderr.textContent="상품을 최소 1개 이상 선택해주세요.";
-     first=first||products;
+     if(!first)first=products;
    }
  });
  if(first){first.scrollIntoView({behavior:"smooth",block:"center"});return false}
