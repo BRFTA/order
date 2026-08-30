@@ -6,10 +6,20 @@ function tpl(id){return `<section class="card recipient" data-id="${id}"><div cl
 function add(){R.insertAdjacentHTML("beforeend",tpl(seq++));renum()}
 function renum(){let a=[...document.querySelectorAll(".recipient")];a.forEach((c,i)=>{c.querySelector(".num").textContent=i+1;c.querySelector(".del").style.visibility=a.length===1?"hidden":"visible"});calc()}
 function calc(){let q=0,t=0;document.querySelectorAll(".product").forEach(e=>{let n=+e.querySelector("output").value,p=C.products.find(x=>x.id===e.dataset.p);q+=n;t+=n*p.price});let d=document.querySelectorAll(".recipient").length;dest.textContent=d+"곳";qty.textContent=q+"박스";total.textContent=won(t+d*C.shippingFee)}
-function err(input,msg){let l=input.closest("label");l.classList.add("invalid");l.querySelector("small").textContent=msg;return l}
+function err(input,msg){
+  input.classList.add("field-invalid");
+  const l=input.closest("label");
+  if(l){
+    l.classList.add("invalid");
+    const s=l.querySelector("small");
+    if(s) s.textContent=msg;
+  }
+  return input;
+}
 function validate(){
  document.querySelectorAll(".addrerr").forEach(x=>x.remove());
  document.querySelectorAll(".invalid").forEach(x=>x.classList.remove("invalid"));
+ document.querySelectorAll(".field-invalid").forEach(x=>x.classList.remove("field-invalid"));
  document.querySelectorAll("small").forEach(x=>x.textContent="");
  let first=null;
 
