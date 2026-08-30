@@ -2,12 +2,35 @@ const C=BRFTA_CONFIG,R=document.querySelector("#recipients");let seq=1,pending=n
 const won=n=>Number(n).toLocaleString("ko-KR")+"원";
 function phone(v){let d=v.replace(/\D/g,"").slice(0,11);if(d.length<4)return d;if(d.length<8)return d.slice(0,3)+"-"+d.slice(3);return d.slice(0,3)+"-"+d.slice(3,7)+"-"+d.slice(7)}
 function validPhone(v){return /^010-\d{4}-\d{4}$/.test(v)}
-function tpl(id){return `<section class="card recipient" data-id="${id}"><div class="head"><h2>배송지 <span class="num"></span></h2><button type="button" class="btn light del">삭제</button></div><div class="grid"><label>받는 사람 이름 *<input class="rname" placeholder="받는 사람 이름"><small></small></label><label>휴대전화번호 *<input class="rphone" inputmode="numeric" maxlength="13" placeholder="010-0000-0000"><small></small></label></div><div class="addr"><button type="button" class="btn light addrbtn">주소 검색</button><div class="addrbox">주소를 검색하여 선택해주세요.</div><input class="baseaddr" type="hidden"></div><label class="detail">상세주소 (선택)<input class="detailinput" placeholder="동·호수 등 필요한 경우만 입력"></label><div class="products">${C.products.map(p=>`<div class="product" data-p="${p.id}"><div><div class="pname">${p.name}</div><div class="muted">${p.price?won(p.price):"가격 추후 설정"}</div></div><div class="qty"><button type="button" class="minus">−</button><output>0</output><button type="button" class="plus">+</button></div></div>`).join("")}</div><small class="carderr"></small></section>`}
+function tpl(id){return `<section class="card recipient" data-id="${id}"><div class="head"><h2>배송지 <span class="num"></span></h2><button type="button" class="btn light del">삭제</button></div><div class="grid"><label>받는 사람 이름 *<input class="rname" placeholder="받는 사람 이름"><small></small></label><label>휴대전화번호 *<input class="rphone" inputmode="numeric" maxlength="13" placeholder="010-0000-0000"><small></small></label></div><div class="addr"><button type="button" class="btn light addrbtn">주소 검색</button><div class="addrbox">주소를 검색하여 선택해주세요.</div><input class="baseaddr" type="hidden"></div><label class="detail">상세주소 (선택)<input class="detailinput" placeholder="동·호수 등 필요한 경우만 입력"></label><div class="products">${C.products.map(p=>`<div class="product" data-p="${p.id}"><div><div class="pname">${p.name}</div><div class="muted">${p.price?won(p.price):"가격 추후 설정"}</div>${p.notice?`<div class="product-notice">${p.notice}</div>`:""}</div><div class="qty"><button type="button" class="minus">−</button><output>0</output><button type="button" class="plus">+</button></div></div>`).join("")}</div><small class="carderr"></small></section>`}
 function add(){R.insertAdjacentHTML("beforeend",tpl(seq++));renum()}
 function renum(){let a=[...document.querySelectorAll(".recipient")];a.forEach((c,i)=>{c.querySelector(".num").textContent=i+1;c.querySelector(".del").style.visibility=a.length===1?"hidden":"visible"});calc()}
 function calc(){let q=0,t=0;document.querySelectorAll(".product").forEach(e=>{let n=+e.querySelector("output").value,p=C.products.find(x=>x.id===e.dataset.p);q+=n;t+=n*p.price});let d=document.querySelectorAll(".recipient").length;dest.textContent=d+"곳";qty.textContent=q+"박스";total.textContent=won(t+d*C.shippingFee)}
 function err(input,msg){let l=input.closest("label");l.classList.add("invalid");l.querySelector("small").textContent=msg;return l}
-function validate(){document.querySelectorAll(".invalid").forEach(x=>x.classList.remove("invalid"));document.querySelectorAll("small").forEach(x=>x.textContent="");let first=null;if(!senderName.value.trim())first=first||err(senderName,"주문자 이름을 입력해주세요.");if(!validPhone(senderPhone.value))first=first||err(senderPhone,"올바른 휴대전화번호를 입력해주세요.");document.querySelectorAll(".recipient").forEach(c=>{let n=c.querySelector(".rname"),p=c.querySelector(".rphone");if(!n.value.trim())first=first||err(n,"받는 사람 이름을 입력해주세요.");if(!validPhone(p.value))first=first||err(p,"올바른 휴대전화번호를 입력해주세요.");let msgs=[];if(!c.querySelector(".baseaddr").value)msgs.push("주소를 검색하여 선택해주세요.");if([...c.querySelectorAll("output")].reduce((s,o)=>s+(+o.value),0)<1)msgs.push("상품을 최소 1개 이상 선택해주세요.");if(msgs.length){c.classList.add("invalid");c.querySelector(".carderr").textContent=msgs.join(" ");first=first||c}});if(first){first.scrollIntoView({behavior:"smooth",block:"center"});return false}return true}
+function validate(){
+ document.querySelectorAll(".addrerr").forEach(x=>x.remove());document.querySelectorAll(".invalid").forEach(x=>x.classList.remove("invalid"));
+ document.querySelectorAll("small").forEach(x=>x.textContent="");
+ let first=null;
+ if(!senderName.value.trim()) first=first||err(senderName,"주문자 이름을 입력해주세요.");
+ if(!validPhone(senderPhone.value)) first=first||err(senderPhone,"올바른 휴대전화번호를 입력해주세요.");
+ document.querySelectorAll(".recipient").forEach(c=>{
+   let n=c.querySelector(".rname"),p=c.querySelector(".rphone"),addr=c.querySelector(".addr"),products=c.querySelector(".products"),carderr=c.querySelector(".carderr");
+   if(!n.value.trim()) first=first||err(n,"받는 사람 이름을 입력해주세요.");
+   if(!validPhone(p.value)) first=first||err(p,"올바른 휴대전화번호를 입력해주세요.");
+   if(!c.querySelector(".baseaddr").value){
+     addr.classList.add("invalid");
+     let m=document.createElement("small"); m.className="addrerr"; m.textContent="주소를 검색하여 선택해주세요."; addr.appendChild(m);
+     first=first||addr;
+   }
+   if([...c.querySelectorAll("output")].reduce((s,o)=>s+(+o.value),0)<1){
+     products.classList.add("invalid");
+     carderr.textContent="상품을 최소 1개 이상 선택해주세요.";
+     first=first||products;
+   }
+ });
+ if(first){first.scrollIntoView({behavior:"smooth",block:"center"});return false}
+ return true
+}
 function reviewOrder(){let h=`<p><b>주문자:</b> ${senderName.value} / ${senderPhone.value}</p>`;document.querySelectorAll(".recipient").forEach((c,i)=>{let items=[...c.querySelectorAll(".product")].map(e=>({q:+e.querySelector("output").value,p:C.products.find(x=>x.id===e.dataset.p)})).filter(x=>x.q);h+=`<div class="review-card"><button type="button" class="btn light edit" data-i="${i}">수정</button><b>배송지 ${i+1}</b><p>${c.querySelector(".rname").value} / ${c.querySelector(".rphone").value}<br>${c.querySelector(".baseaddr").value}${c.querySelector(".detailinput").value?" "+c.querySelector(".detailinput").value:""}</p>${items.map(x=>`${x.p.name} × ${x.q}`).join("<br>")}</div>`});h+=`<p><b>${qty.textContent} / ${total.textContent}</b></p>`;review.innerHTML=h;modal.classList.remove("hidden")}
 document.addEventListener("input",e=>{if(e.target.matches("#senderPhone,.rphone"))e.target.value=phone(e.target.value)});
 document.addEventListener("click",e=>{if(e.target.id==="add")add();if(e.target.matches(".plus,.minus")){let o=e.target.parentElement.querySelector("output"),n=+o.value+(e.target.matches(".plus")?1:-1);o.value=Math.max(0,Math.min(9,n));calc()}if(e.target.matches(".del")){pending=e.target.closest(".recipient");delModal.classList.remove("hidden")}if(e.target.id==="cancelDel")delModal.classList.add("hidden");if(e.target.id==="okDel"&&pending){pending.remove();pending=null;delModal.classList.add("hidden");renum()}if(e.target.matches(".addrbtn")){let c=e.target.closest(".recipient"),a=prompt("1차 테스트용 기본주소 입력\n(다음 단계에서 실제 주소검색 서비스를 연결합니다.)","");if(a){c.querySelector(".baseaddr").value=a;c.querySelector(".addrbox").textContent=a}}if(e.target.id==="back")modal.classList.add("hidden");if(e.target.matches(".edit")){let i=+e.target.dataset.i;modal.classList.add("hidden");document.querySelectorAll(".recipient")[i].scrollIntoView({behavior:"smooth"})}if(e.target.id==="submitMock")alert("현재는 화면 테스트 버전입니다. 실제 주문 저장은 다음 서버/DB 단계에서 연결합니다.")});
