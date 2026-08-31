@@ -67,7 +67,18 @@
     .title { display: block; color: var(--wine); font-size: 20px; font-weight: 800; letter-spacing: -.35px; }
     .desc { display: block; margin-top: 7px; color: var(--muted); font-size: 14px; line-height: 1.55; }
     .arrow { position: absolute; right: 22px; top: 50%; transform: translateY(-50%); color: var(--gold); font-size: 25px; }
-    .admin-area { margin-top: 46px; padding-top: 25px; border-top: 1px solid var(--line); text-align: center; }
+    .admin-area { margin-top: 30px; padding-top: 25px; border-top: 1px solid var(--line); text-align: center; }
+    .bank-info {
+  margin-top: 24px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+.bank-info strong {
+  color: var(--wine);
+  font-size: 14px;
+}
     .admin-note { margin: 0 0 12px; color: #918783; font-size: 12px; }
     .admin-button {
       display: inline-block;
@@ -121,7 +132,13 @@
         <span class="arrow" aria-hidden="true">↓</span>
       </a>
     </section>
-
+    
+    <div class="bank-info">
+      <strong>입금계좌 안내</strong><br>
+      NH농협은행 302-1493-9538-91     (계좌번호복사용 : 3021493953891) <br>
+      예금주 : 김준영(배려프레스코푸르타)
+    </div>
+    
     <section class="admin-area">
       <p class="admin-note">BRFTA 관리자 전용</p>
       <a class="admin-button" href="https://brfta-order-admin.brfrescofruta.workers.dev/" target="_blank" rel="noopener noreferrer">🔒 주문관리 시스템</a>
